@@ -2,13 +2,13 @@
 import path from "node:path";
 
 interface Props {
-    id?: string;
-    src: string;
-    class?: string;
-    alt?: string;
-    position?: string;
-    basePath?: string;
-    noDarken?: boolean;
+	id?: string;
+	src: string;
+	class?: string;
+	alt?: string;
+	position?: string;
+	basePath?: string;
+	noDarken?: boolean;
 }
 
 import { Image } from "astro:assets";
@@ -18,20 +18,20 @@ import { generateImageCover } from "@utils/image-cover";
 import { url } from "@utils/url";
 
 const {
-    id,
-    src,
-    alt,
-    position = "center",
-    basePath = "/",
-    noDarken = false,
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "/",
+	noDarken = false,
 } = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
-    src.startsWith("/") ||
-    src.startsWith("http") ||
-    src.startsWith("https") ||
-    src.startsWith("data:")
+	src.startsWith("/") ||
+	src.startsWith("http") ||
+	src.startsWith("https") ||
+	src.startsWith("data:")
 );
 const isPublic = src.startsWith("/");
 
@@ -40,45 +40,45 @@ const isPublic = src.startsWith("/");
 // biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
 let img;
 if (isLocal) {
-    const files = import.meta.glob<ImageMetadata>(
-        "../../**/*.{png,jpg,jpeg,gif,svg,webp,avif}",
-        {
-            import: "default",
-        },
-    );
-    let normalizedPath = path
-        .normalize(path.join("../../", basePath, src))
-        .replace(/\\/g, "/");
-    const file = files[normalizedPath];
-    if (!file) {
-        console.error(
-            `\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
-        );
-    }
+	const files = import.meta.glob<ImageMetadata>(
+		"../../**/*.{png,jpg,jpeg,gif,svg,webp,avif}",
+		{
+			import: "default",
+		},
+	);
+	let normalizedPath = path
+		.normalize(path.join("../../", basePath, src))
+		.replace(/\\/g, "/");
+	const file = files[normalizedPath];
+	if (!file) {
+		console.error(
+			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
+		);
+	}
 
-    if (!file) {
-        console.error(
-            `\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
-        );
-    } else {
-        img = await file();
-    }
+	if (!file) {
+		console.error(
+			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
+		);
+	} else {
+		img = await file();
+	}
 }
 
 let shouldDarken = !noDarken;
 let imageCover = null;
 if (isLocal && img && !noDarken) {
-    const normalizedPath = path
-        .normalize(path.join("../../", basePath, src))
-        .replace(/\\/g, "/");
+	const normalizedPath = path
+		.normalize(path.join("../../", basePath, src))
+		.replace(/\\/g, "/");
 
-    const absolutePath = path.resolve(
-        path.join(process.cwd(), "src", normalizedPath.replace("../../", "")),
-    );
+	const absolutePath = path.resolve(
+		path.join(process.cwd(), "src", normalizedPath.replace("../../", "")),
+	);
 
-    if (shouldDarken) {
-        imageCover = await generateImageCover(absolutePath);
-    }
+	if (shouldDarken) {
+		imageCover = await generateImageCover(absolutePath);
+	}
 }
 
 const imageStyle = `object-position: ${position}`;

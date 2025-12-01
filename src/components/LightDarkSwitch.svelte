@@ -1,70 +1,70 @@
 <script lang="ts">
-    import { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
-    import I18nKey from "@i18n/i18nKey";
-    import { i18n } from "@i18n/translation";
-    import Icon from "@iconify/svelte";
-    import {
-        applyThemeToDocument,
-        getStoredTheme,
-        setTheme,
-    } from "@utils/settings";
-    import { onMount } from "svelte";
-    import type { LIGHT_DARK_MODE } from "@/types/config.ts";
+import { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import Icon from "@iconify/svelte";
+import {
+    applyThemeToDocument,
+    getStoredTheme,
+    setTheme,
+} from "@utils/settings";
+import { onMount } from "svelte";
+import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 
-    const SEQUENCE: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE, AUTO_MODE];
+const SEQUENCE: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE, AUTO_MODE];
 
-    let mode: LIGHT_DARK_MODE = AUTO_MODE;
-    let panelOpen = false;
+let mode: LIGHT_DARK_MODE = AUTO_MODE;
+let panelOpen = false;
 
-    // Keep a reference so we can remove the listener on destroy
-    let mediaQuery: MediaQueryList | null = null;
-    let mediaListener: ((e: MediaQueryListEvent) => void) | null = null;
+// Keep a reference so we can remove the listener on destroy
+let mediaQuery: MediaQueryList | null = null;
+let mediaListener: ((e: MediaQueryListEvent) => void) | null = null;
 
-    onMount(() => {
-        // initialize from storage and apply immediately
-        mode = getStoredTheme();
-        applyThemeToDocument(mode);
+onMount(() => {
+    // initialize from storage and apply immediately
+    mode = getStoredTheme();
+    applyThemeToDocument(mode);
 
-        // respond to system changes ONLY when in AUTO
-        mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-        mediaListener = () => {
-            if (mode === AUTO_MODE) applyThemeToDocument(AUTO_MODE);
-        };
-        mediaQuery.addEventListener("change", mediaListener);
+    // respond to system changes ONLY when in AUTO
+    mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaListener = () => {
+        if (mode === AUTO_MODE) applyThemeToDocument(AUTO_MODE);
+    };
+    mediaQuery.addEventListener("change", mediaListener);
 
-        return () => {
-            if (mediaQuery && mediaListener) {
-                mediaQuery.removeEventListener("change", mediaListener);
-            }
-        };
-    });
-
-    function switchScheme(newMode: LIGHT_DARK_MODE) {
-        mode = newMode;
-        setTheme(newMode);
-        applyThemeToDocument(newMode);
-    }
-
-    function toggleScheme() {
-        const idx = SEQUENCE.indexOf(mode);
-        switchScheme(SEQUENCE[(idx + 1) % SEQUENCE.length]);
-    }
-
-    function openPanel() {
-        panelOpen = true;
-    }
-    function closePanel() {
-        panelOpen = false;
-    }
-
-    function onKeyDown(e: KeyboardEvent) {
-        if (e.key === "Escape") {
-            closePanel();
-            // move focus back to the trigger button for accessibility
-            const btn = document.getElementById("scheme-switch");
-            btn?.focus();
+    return () => {
+        if (mediaQuery && mediaListener) {
+            mediaQuery.removeEventListener("change", mediaListener);
         }
+    };
+});
+
+function switchScheme(newMode: LIGHT_DARK_MODE) {
+    mode = newMode;
+    setTheme(newMode);
+    applyThemeToDocument(newMode);
+}
+
+function toggleScheme() {
+    const idx = SEQUENCE.indexOf(mode);
+    switchScheme(SEQUENCE[(idx + 1) % SEQUENCE.length]);
+}
+
+function openPanel() {
+    panelOpen = true;
+}
+function closePanel() {
+    panelOpen = false;
+}
+
+function onKeyDown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+        closePanel();
+        // move focus back to the trigger button for accessibility
+        const btn = document.getElementById("scheme-switch");
+        btn?.focus();
     }
+}
 </script>
 
 <!-- z-50 keeps this above other float panels -->

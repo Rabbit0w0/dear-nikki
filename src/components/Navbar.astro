@@ -14,8 +14,8 @@ const className = Astro.props.class;
 const isProd = import.meta.env.PROD;
 
 const links: NavBarLink[] = navBarConfig.links.map(
-  (item: NavBarLink | LinkPreset): NavBarLink =>
-    typeof item === "number" ? LinkPresets[item] : item,
+    (item: NavBarLink | LinkPreset): NavBarLink =>
+        typeof item === "number" ? LinkPresets[item] : item,
 );
 
 const MAX_DESKTOP_LINKS = 5; // tweak as you like
